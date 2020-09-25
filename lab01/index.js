@@ -27,7 +27,6 @@ const matrixInitialization = (str) => {
 }
 
 const recursiveOptimizedLevenshtein = (strA, strB, matrix) => {
-    console.log(matrix);
     if (typeof(matrix[strA.length][strB.length]) !== 'undefined') {
         return matrix[strA.length][strB.length];
     } 
@@ -132,20 +131,18 @@ while (menuOperation !== 0) {
             end = now();
         }
         else if (menuOperation === 2) {
-            console.log(matrix);
             start = now();
             for (let i = 0; i < 1000; i++) {
                 matrix = matrixInitialization(strA);
                 distance = recursiveOptimizedLevenshtein(strA, strB, matrix);
             }
             end = now();
-            matrix = [];
         }
         else if (menuOperation === 3) {
             start = now();
             for (let i = 0; i < 1000; i++) {
                 distance = matrixLevenshtein(strA, strB, matrix);
-                matrix = [];
+                //matrix = [];
             }
             end = now();
         }
@@ -153,7 +150,7 @@ while (menuOperation !== 0) {
             start = now();
             for (let i = 0; i < 1000; i++) {
                 distance =  matrixDamerauLevenshtein(strA, strB, matrix);
-                matrix = [];
+                //matrix = [];
             }
             end = now();
         }
@@ -169,7 +166,37 @@ while (menuOperation !== 0) {
     else if (menuOperation === 5) {
         strA = readlineSync.question("Введите первую строку: ");
         strB = readlineSync.question("Введите вторую строку: ");
-        matrix = matrixInitialization(strA);
+        //matrix = matrixInitialization(strA);
+        start = now();
+        for (let i = 0; i < 1000; i++) {
+            distance = recursiveLevenshtein(strA, strB);
+        }
+        end = now();
+        console.log("\nВремя выполнения алгоритма нахождение расстояния Левенштейна рекурсивно  - " + ((end - start) / 1000).toFixed(3) + " миллисекунд");
+        start = now();
+        for (let i = 0; i < 1000; i++) {
+            matrix = matrixInitialization(strA);
+            distance = recursiveOptimizedLevenshtein(strA, strB, matrix);
+        }
+        end = now();
+        console.log("Время выполнения алгоритма нахождение расстояния Левенштейна рекурсивно с матрицей  - " + ((end - start) / 1000).toFixed(3) + " миллисекунд");
+        matrix = [];
+        start = now();
+        for (let i = 0; i < 1000; i++) {
+            distance = matrixLevenshtein(strA, strB, matrix);
+            //matrix = [];
+        }
+        end = now();
+        console.log("Время выполнения алгоритма нахождение расстояния Левенштейна матрично  - " + ((end - start) / 1000).toFixed(3) + " миллисекунд");
+        matrix = [];
+        for (let i = 0; i < 1000; i++) {
+            distance = matrixDamerauLevenshtein(strA, strB, matrix);
+            //matrix = [];
+        }
+        end = now();
+        console.log("Время выполнения алгоритма нахождение расстояния Дамерау - Левенштейна матрично  - " + ((end - start) / 1000).toFixed(3) + " миллисекунд\n");
+        matrix = [];
+        /*
         let suite = new Benchmark.Suite();
         suite.add("recursiveLevenshtein", recursiveLevenshtein(strA, strB));
         suite.add("recursiveOptimizedLevenshtein", recursiveLevenshtein(strA, strB, matrix));
@@ -185,6 +212,7 @@ while (menuOperation !== 0) {
             console.log("Fastest is " + this.filter("fastest").map("name"));
         })
         suite.run();
+        */
     }
     else if (menuOperation !== 0) {
         console.log("Неверный номер операции");
