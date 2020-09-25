@@ -2,6 +2,7 @@
 
 const readlineSync = require('readline-sync');
 const now = require("performance-now")
+const { Benchmark } = require("benchmark");
 
 function removeLastSymbol(str) {
     return str.slice(0, -1);
@@ -26,9 +27,6 @@ function matrixInitialization(str) {
 }
 
 function recursiveOptimizedLevenshtein(strA, strB, matrix) {
-    if (typeof(matrix) == 'undefined') {
-        matrix = matrixInitialization(strA);
-    }
     if (typeof(matrix[strA.length][strB.length]) !== 'undefined') {
         return matrix[strA.length][strB.length];
     } 
@@ -44,8 +42,7 @@ function recursiveOptimizedLevenshtein(strA, strB, matrix) {
     return matrix[strA.length][strB.length];
 }
 
-function matrixLevenshtein(strA, strB) {
-    let matrix = [];
+function matrixLevenshtein(strA, strB, matrix) {
     for (let i = 0; i < strA.length + 1; i++) {
         matrix[i] = [];
         for (let j = 0; j < strB.length + 1; j++) {
@@ -61,12 +58,10 @@ function matrixLevenshtein(strA, strB) {
             }
         }
     }
-    //console.log(matrix);
     return matrix[strA.length][strB.length];
 }
 
-function matrixDamerauLevenshtein(strA, strB) {
-    let matrix = [];
+function matrixDamerauLevenshtein(strA, strB, matrix) {
     for (let i = 0; i < strA.length + 1; i++) {
         matrix[i] = [];
         for (let j = 0; j < strB.length + 1; j++) {
@@ -85,8 +80,21 @@ function matrixDamerauLevenshtein(strA, strB) {
             }
         }
     }
-    //console.log(matrix);
     return matrix[strA.length][strB.length];
+}
+
+function matrixOutput(martix) {
+    let stringMatrix = "";
+    for (let i = 0; i < matrix.length; i++) {
+        if (i !== 0) {
+            stringMatrix += '\n';
+        }
+        for (let j = 0; j < matrix[i].length; j++) {
+            stringMatrix += String(matrix[i][j]);
+            stringMatrix += ' ';
+        }
+    }   
+    console.log(stringMatrix);
 }
 
 //console.log(recursiveLevenshtein("hyundai", "honda"));
@@ -100,11 +108,14 @@ let strB = "";
 let distance = 0;
 let start = 0;
 let end = 0;
+let matrix = [];   
+
 while (menuOperation !== 0) {
     console.log("1 - Нахождение расстояния Левенштейна рекурсивно");
     console.log("2 - Нахождение расстояния Левенштейна рекурсивно с матрицей");
     console.log("3 - Нахождение расстояния Левенштейна матрично");
     console.log("4 - Нахождение расстояния Дамерау - Левенштейна матрично");
+    console.log("5 - Сравнение алгоритмов");
     console.log("0 - Выход");
     console.log('\n');
     menuOperation = readlineSync.question("Введите номер операции: ");
@@ -114,26 +125,61 @@ while (menuOperation !== 0) {
         strB = readlineSync.question("Введите вторую строку: ");
         if (menuOperation === 1) {
             start = now();
-            distance = recursiveLevenshtein(strA, strB);
+            for (let i = 0; i < 1000; i++) {
+                distance = recursiveLevenshtein(strA, strB);
+            }
             end = now();
         }
         else if (menuOperation === 2) {
+            matrix = matrixInitialization(strA);
             start = now();
-            distance = recursiveOptimizedLevenshtein(strA, strB);
+            for (let i = 0; i < 1000; i++) {
+                distance = recursiveOptimizedLevenshtein(strA, strB, matrix );
+            }
             end = now();
         }
         else if (menuOperation === 3) {
             start = now();
-            distance = matrixLevenshtein(strA, strB);
+            for (let i = 0; i < 1000; i++) {
+                distance = matrixLevenshtein(strA, strB, matrix);
+            }
             end = now();
         }
         else if (menuOperation === 4) {
             start = now();
-            distance =  matrixDamerauLevenshtein(strA, strB);
+            for (let i = 0; i < 1000; i++) {
+                distance =  matrixDamerauLevenshtein(strA, strB, matrix);
+            }
             end = now();
         }
         console.log("\nРасстояние Левенштейна - " + distance);
-        console.log("Время выполнения алгоритма - " + (end - start).toFixed(3) + " миллисекунд\n");
+        console.log("Время выполнения алгоритма - " + ((end - start) / 1000).toFixed(3) + " миллисекунд");
+        if (matrix.length !== 0) {
+            console.log("Матрица:");
+            matrixOutput(matrix);
+        }
+        console.log('\n');
+        matrix = [];
+    }
+    else if (menuOperation === 5) {
+        matrix = matrixInitialization(strA);
+        strA = readlineSync.question("Введите первую строку: ");
+        strB = readlineSync.question("Введите вторую строку: ");
+        let suite = new Benchmark.Suite();
+        suite.add("recursiveLevenshtein", recursiveLevenshtein(strA, strB));
+        suite.add("recursiveOptimizedLevenshtein", recursiveLevenshtein(strA, strB, matrix));
+        matrix = [];
+        suite.add("matrixLevenshtein", recursiveLevenshtein(strA, strB, matrix));
+        matrix = [];
+        suite.add("matrixDamerauLevenshtein", recursiveLevenshtein(strA, strB, matrix));
+        matrix = [];
+        suite.on("cycle", function(event) {
+            console.log(String(event.target));
+        });
+        suite.on("complete", function() {
+            console.log("Fastest is " + this.filter("fastest").map("name"));
+        })
+        suite.run();
     }
     else if (menuOperation !== 0) {
         console.log("Неверный номер операции");
