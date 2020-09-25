@@ -4,11 +4,11 @@ const readlineSync = require('readline-sync');
 const now = require("performance-now")
 const { Benchmark } = require("benchmark");
 
-function removeLastSymbol(str) {
+const removeLastSymbol = (str) => {
     return str.slice(0, -1);
 }
 
-function recursiveLevenshtein(strA, strB) {
+const recursiveLevenshtein = (strA, strB) => {
     if (strA.length === 0 || strB.length === 0) {
         return Math.abs(strA.length - strB.length);
     }
@@ -18,7 +18,7 @@ function recursiveLevenshtein(strA, strB) {
                     recursiveLevenshtein(removeLastSymbol(strA), removeLastSymbol(strB)) + cost);
 }
 
-function matrixInitialization(str) {
+const matrixInitialization = (str) => {
     let matrix = [];
     for (let i = 0; i < str.length + 1; i++) {
         matrix[i] = [];
@@ -26,7 +26,8 @@ function matrixInitialization(str) {
     return matrix;
 }
 
-function recursiveOptimizedLevenshtein(strA, strB, matrix) {
+const recursiveOptimizedLevenshtein = (strA, strB, matrix) => {
+    console.log(matrix);
     if (typeof(matrix[strA.length][strB.length]) !== 'undefined') {
         return matrix[strA.length][strB.length];
     } 
@@ -42,7 +43,7 @@ function recursiveOptimizedLevenshtein(strA, strB, matrix) {
     return matrix[strA.length][strB.length];
 }
 
-function matrixLevenshtein(strA, strB, matrix) {
+const matrixLevenshtein = (strA, strB, matrix) => {
     for (let i = 0; i < strA.length + 1; i++) {
         matrix[i] = [];
         for (let j = 0; j < strB.length + 1; j++) {
@@ -61,7 +62,7 @@ function matrixLevenshtein(strA, strB, matrix) {
     return matrix[strA.length][strB.length];
 }
 
-function matrixDamerauLevenshtein(strA, strB, matrix) {
+const matrixDamerauLevenshtein = (strA, strB, matrix) => {
     for (let i = 0; i < strA.length + 1; i++) {
         matrix[i] = [];
         for (let j = 0; j < strB.length + 1; j++) {
@@ -83,7 +84,7 @@ function matrixDamerauLevenshtein(strA, strB, matrix) {
     return matrix[strA.length][strB.length];
 }
 
-function matrixOutput(martix) {
+const matrixOutput = (martix) => {
     let stringMatrix = "";
     for (let i = 0; i < matrix.length; i++) {
         if (i !== 0) {
@@ -131,17 +132,20 @@ while (menuOperation !== 0) {
             end = now();
         }
         else if (menuOperation === 2) {
-            matrix = matrixInitialization(strA);
+            console.log(matrix);
             start = now();
             for (let i = 0; i < 1000; i++) {
-                distance = recursiveOptimizedLevenshtein(strA, strB, matrix );
+                matrix = matrixInitialization(strA);
+                distance = recursiveOptimizedLevenshtein(strA, strB, matrix);
             }
             end = now();
+            matrix = [];
         }
         else if (menuOperation === 3) {
             start = now();
             for (let i = 0; i < 1000; i++) {
                 distance = matrixLevenshtein(strA, strB, matrix);
+                matrix = [];
             }
             end = now();
         }
@@ -149,6 +153,7 @@ while (menuOperation !== 0) {
             start = now();
             for (let i = 0; i < 1000; i++) {
                 distance =  matrixDamerauLevenshtein(strA, strB, matrix);
+                matrix = [];
             }
             end = now();
         }
@@ -162,9 +167,9 @@ while (menuOperation !== 0) {
         matrix = [];
     }
     else if (menuOperation === 5) {
-        matrix = matrixInitialization(strA);
         strA = readlineSync.question("Введите первую строку: ");
         strB = readlineSync.question("Введите вторую строку: ");
+        matrix = matrixInitialization(strA);
         let suite = new Benchmark.Suite();
         suite.add("recursiveLevenshtein", recursiveLevenshtein(strA, strB));
         suite.add("recursiveOptimizedLevenshtein", recursiveLevenshtein(strA, strB, matrix));
