@@ -3,12 +3,24 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"./sorts"
 )
+
+func generateRandomSlice(size int) []int {
+
+	slice := make([]int, size, size)
+	rand.Seed(time.Now().UnixNano())
+	for i := 0; i < size; i++ {
+		slice[i] = rand.Intn(999) - rand.Intn(999)
+	}
+	return slice
+}
 
 func inputSlice() []int {
 	intSlice := []int{} // Slice containing entered integers
@@ -41,10 +53,23 @@ func printSlice(intSlice []int) {
 }
 
 func main() {
-	intSlice := inputSlice()
+	var num int
+	fmt.Print("\n")
+	fmt.Print("Enter a number of array's elements: ")
+	_, err := fmt.Scanf("%d", &num)
+	if err != nil {
+		panic(err)
+	}
+	intSlice := generateRandomSlice(num)
+	fmt.Print("The random slice of integers: ")
+	printSlice(intSlice)
+	fmt.Print("\n")
+
 	//sorts.BubbleSort(intSlice)
 	//sorts.InsertionSort(intSlice)
 	sorts.QuickSort(intSlice)
-	printSlice(intSlice)
 
+	fmt.Print("Sorted array: ")
+	printSlice(intSlice)
+	fmt.Print("\n")
 }

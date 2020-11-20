@@ -1,9 +1,19 @@
 package sorts
 
-import "math/rand"
+import (
+	"log"
+	"math/rand"
+	"time"
+)
+
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	log.Printf("%s took %s", name, elapsed)
+}
 
 // BubbleSort sorts a slice of integers in increasing order with bubble sort algorithm
 func BubbleSort(intSlice []int) {
+	//defer timeTrack(time.Now(), "Bubble Sort")
 	for i := len(intSlice); i > 0; i-- {
 		for j := 0; j < i-1; j++ {
 			if intSlice[j] > intSlice[j+1] {
@@ -21,6 +31,7 @@ func swap(intSlice []int, i int) {
 
 // InsertionSort sorts a slice of integers in increasing order with insertion sort algorithm
 func InsertionSort(intSlice []int) {
+	//defer timeTrack(time.Now(), "Insertion Sort")
 	var n = len(intSlice)
 	for i := 1; i < n; i++ {
 		j := i
@@ -50,5 +61,6 @@ func QuickSort(intSlice []int) []int {
 	intSlice[left], intSlice[right] = intSlice[right], intSlice[left]
 	QuickSort(intSlice[:left])
 	QuickSort(intSlice[left+1:])
+	//defer timeTrack(time.Now(), "Quick Sort")
 	return intSlice
 }
