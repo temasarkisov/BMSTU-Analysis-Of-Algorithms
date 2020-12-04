@@ -10,7 +10,7 @@ using namespace std;
 void time_test() {
     FILE *f = fopen("time.txt", "w");
     fprintf(f,"%5s,%10s,%10s,%10s\n", "N" , "1", "2", "vinograd2");
-    printf("%5s,%10s,%10s,%10s,%10s,%10s\n", "N" , "1", "2", "4", "8", "16");
+    printf("%5s,%10s,%10s,%10s,%10s,%10s,%10s,%10s\n", "N" , "1", "2", "4", "8", "16", "32", "64");
     //unsigned int time = 0;
     std::clock_t time = 0;
     int repeat = 5;
@@ -24,6 +24,8 @@ void time_test() {
         time = 0;
         m1.make_random();
         m2.make_random();
+        
+        // 1
         for (int j = 0; j < repeat ; j++)
         {
             std::clock_t start = std::clock();
@@ -34,6 +36,8 @@ void time_test() {
         printf("%10d,", time/repeat);
         fprintf(f,"%10d,", time/repeat);
         time = 0;
+        
+        // 2
         for (int j = 0; j < repeat ; j++)
         {
             std::clock_t start = std::clock();
@@ -44,6 +48,8 @@ void time_test() {
         printf("%10d,", time/repeat);
         fprintf(f,"%10d,", time/repeat);
         time = 0;
+        
+        // 4
         for (int j = 0; j < repeat ; j++)
         {
 
@@ -55,6 +61,8 @@ void time_test() {
         printf("%10d,", time/repeat);
         fprintf(f,"%10d,", time/repeat);
         time = 0;
+        
+        // 8
         for (int j = 0; j < repeat ; j++)
         {
 
@@ -66,11 +74,37 @@ void time_test() {
         printf("%10d,", time/repeat);
         fprintf(f,"%10d,", time/repeat);
         time = 0;
+        
+        // 16
         for (int j = 0; j < repeat ; j++)
         {
 
             std::clock_t start = std::clock();
             Mul(m1,m2,16);
+            std::clock_t end = std::clock();
+            time += end-start;
+        }
+        printf("%10d,", time/repeat);
+        fprintf(f,"%10d,", time/repeat);
+        
+        // 32
+        for (int j = 0; j < repeat ; j++)
+        {
+
+            std::clock_t start = std::clock();
+            Mul(m1,m2,32);
+            std::clock_t end = std::clock();
+            time += end-start;
+        }
+        printf("%10d,", time/repeat);
+        fprintf(f,"%10d,", time/repeat);
+
+        // 64
+        for (int j = 0; j < repeat ; j++)
+        {
+
+            std::clock_t start = std::clock();
+            Mul(m1,m2,64);
             std::clock_t end = std::clock();
             time += end-start;
         }
